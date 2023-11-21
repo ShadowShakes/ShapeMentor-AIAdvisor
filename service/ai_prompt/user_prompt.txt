@@ -1,0 +1,18 @@
+Example1:
+
+name: Mike,
+track_data: [
+    {"date": "2023-10-01", "height": "178cm", "weight": "60kg", "body_fat_percentage": 0.18},
+    {"date": "2023-10-08", "height": "178cm", "weight": "62kg", "body_fat_percentage": 0.19},
+    {"date": "2023-10-15", "height": "178cm", "weight": "64kg", "body_fat_percentage": 0.20},
+    {"date": "2023-11-01", "height": "178cm", "weight": "68kg", "body_fat_percentage": 0.22}
+]
+
+Advice:
+You should control your weight, and try to eat healthier, such as reducing the intake of carbohydrate.
+
+
+Please follow this example, and based on what the input health data below, give the health advice for the member. Write more specifically than the example.
+
+name: $name
+track_data: $track_data
