@@ -6,12 +6,7 @@ import utils
 from typing import Dict
 
 API_KEYS_POOL = [
-    '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',  # from Shaohan gpt4-available
-    # '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',  # from Long
-    # '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',  # from Yimin
-    # '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',  # from Muchen
-    # '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',  # from Tianshu
-    # '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'   # from Josie
+
 ]
 
 
