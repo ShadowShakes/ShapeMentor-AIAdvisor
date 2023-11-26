@@ -10,8 +10,8 @@ from exceptions import RequestNotFoundError, BadRequestError, InternalError
 
 app = Flask(__name__)
 
-mysql_client = MysqlClient(config.LOCALHOST, config.LOCAL_DB_USERNAME,
-                           config.LOCAL_DB_PW, config.LOCAL_DB_NAME)
+mysql_client = MysqlClient(config.DB_HOST, config.DB_USERNAME,
+                           config.DB_PW, config.DB_NAME)
 advice_dao = AdvisorDAO(mysql_client)
 ai_advisor = AIAdvisor()
 
@@ -76,7 +76,7 @@ def post_member_body_index_ai_generation(request_id: str):
 
 
 @app.route('/ai_advisor/<request_id>', methods=['GET'])
-def get_pers_itinerary(request_id: str):
+def get_member_body_index_ai_response(request_id: str):
     try:
         advice_response = advice_dao.get_body_index_advice(request_id)
 
