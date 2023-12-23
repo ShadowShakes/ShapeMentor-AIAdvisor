@@ -14,5 +14,5 @@ You should control your weight, and try to eat healthier, such as reducing the i
 
 Please follow this example, and based on what the input health data below, give the health advice for the member. Write more specifically than the example.
 
-name: $name
+name: $user_name
 track_data: $track_data

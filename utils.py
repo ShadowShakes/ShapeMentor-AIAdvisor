@@ -14,9 +14,9 @@ def get_root_path():
     return __file__.split('/utils.py', maxsplit=1)[0]
 
 
-def transform_body_index_request_payload(request_id: str, payload: Dict) -> Dict or None:
+def transform_body_index_request_payload(user_email: str, payload: Dict) -> Dict or None:
     data = payload['data']
-    data['request_id'] = request_id
+    data['user_email'] = user_email
     data['track_data'] = json.dumps(data['track_data'])
     return data
 

@@ -1,2 +1,2 @@
-# ShapeMentor_MicroService
-Microservice on GCP for ShapeMentor App
+# ShapeMentor-AIAdvisor
+For course 6156

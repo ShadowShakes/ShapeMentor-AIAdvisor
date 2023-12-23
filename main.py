@@ -26,45 +26,34 @@ def check_health():
     return {'msg': 'server is healthy!', 'datetime': datetime.now()}
 
 
-@app.route('/ai_advisor/upload_request', methods=['POST'])
-def post_member_body_index_upload_request():
-    payload = request.json
-    request_id = utils.generate_request_id()
-
-    request_data = utils.transform_body_index_request_payload(request_id, payload)
-
-    if request_data is None:
-        raise BadRequestError
-
-    try:
-        if not advice_dao.write_member_body_index_data(request_data):
-            raise InternalError
-
-        return success_rsp({'request_id': request_id})
-
-    except Exception as e:
-        if isinstance(e, BadRequestError):
-            raise BadRequestError
-        print(f'unexpected exceptions: {e}')
-        raise InternalError
-
-
-@app.route('/ai_advisor/<request_id>/ai_generation', methods=['POST'])
-def post_member_body_index_ai_generation(request_id: str):
+@app.route('/ai_advisor/<user_email>/generate_advice', methods=['POST'])
+def post_user_body_metrics_ai_generation(user_email: str):
     start_time = time.time()
     try:
-        body_index_request_data = advice_dao.get_member_body_index_data(request_id)
+        body_metrics_request_data = advice_dao.get_user_body_metrics_data(user_email)
 
-        if body_index_request_data is None:
+        if body_metrics_request_data is None:
             raise RequestNotFoundError
 
         use_gpt4 = request.args.get('use_gpt4', default='false') == 'true'
-        personalized_advice = ai_advisor.get_body_index_advice(body_index_request_data, use_gpt4)
 
-        if not advice_dao.write_body_index_advice(request_id, personalized_advice):
+        user_name = body_metrics_request_data["data"]["user_name"]
+        user_id = body_metrics_request_data["data"]["user_id"]
+        user_email = body_metrics_request_data["data"]["user_email"]
+        advice_timestamp = body_metrics_request_data["data"]["advice_timestamp"]
+        track_data = body_metrics_request_data["data"]["track_data"]
+
+        transformed_json = {
+            "user_name": user_name,  # Use the extracted user_name
+            "track_data": list(track_data.values())  # Convert track_data to a list
+        }
+
+        personalized_advice = ai_advisor.get_body_metrics_advice(transformed_json, use_gpt4)
+
+        if not advice_dao.write_body_metrics_advice_data(user_id, user_email, advice_timestamp, personalized_advice):
             raise InternalError
 
-        return success_rsp({'request_id': request_id, 'response_data': personalized_advice,
+        return success_rsp({'user_email': user_email, 'response_data': personalized_advice,
                             'execution_time': time.time() - start_time, 'use_gpt4_for_plan': use_gpt4})
     except Exception as e:
         if isinstance(e, RequestNotFoundError):
@@ -75,15 +64,31 @@ def post_member_body_index_ai_generation(request_id: str):
         print("request completed in {.2f} seconds", time.time() - start_time)
 
 
-@app.route('/ai_advisor/<request_id>', methods=['GET'])
-def get_member_body_index_ai_response(request_id: str):
+@app.route('/ai_advisor/<user_email>/get_current_advice', methods=['GET'])
+def get_user_body_metrics_ai_response_current(user_email: str):
     try:
-        advice_response = advice_dao.get_body_index_advice(request_id)
+        advice_response = advice_dao.get_current_body_metrics_advice_data(user_email)
 
         if advice_response is None:
             raise RequestNotFoundError
 
-        return success_rsp(advice_response)
+        return success_rsp({"response_data": advice_response})
+    except Exception as e:
+        if isinstance(e, RequestNotFoundError):
+            raise RequestNotFoundError
+        print(f'unexpected exceptions: {e}')
+        raise InternalError
+
+
+@app.route('/ai_advisor/<user_email>/get_past_advice', methods=['GET'])
+def get_user_body_metrics_ai_response_past(user_email: str):
+    try:
+        advice_response = advice_dao.get_past_body_metrics_advice_data(user_email)
+
+        if advice_response is None:
+            raise RequestNotFoundError
+
+        return success_rsp({"response_data": advice_response})
     except Exception as e:
         if isinstance(e, RequestNotFoundError):
             raise RequestNotFoundError

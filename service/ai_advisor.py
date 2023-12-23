@@ -1,7 +1,6 @@
 """Personalized AI interaction to provide health advice."""
 
 from openai import OpenAI
-import time
 from service.properties import ApiKeySelector, load_prompts_map
 from utils import timer
 from typing import Dict, List
@@ -18,24 +17,24 @@ class AIAdvisor:
     """
 
     @timer
-    def get_body_index_advice(self, request_data: Dict, use_gpt4: bool = False) -> Dict:
-        print(f'Generating AI personalized advice now for member based on body index')
-        result_body_index_json = {}
+    def get_body_metrics_advice(self, request_data: Dict, use_gpt4: bool = False) -> Dict:
+        print(f'Generating AI personalized advice now for user based on body metrics')
+        result_body_metrics_json = {}
         try:
             gpt_model = 'gpt-4' if use_gpt4 else 'gpt-3.5-turbo'
-            result_body_index_json = generate_member_body_index_advice(PROMPTS_MAP['user_prompt'],
+            result_body_metrics_json = generate_user_body_metrics_advice(PROMPTS_MAP['user_prompt'],
                                                                        PROMPTS_MAP['system_prompt'],
                                                                        request_data,
                                                                        gpt_model)
         except Exception as e:
-            print(f"Met exception {e} during AI advice generation for body index analysis")
-        return result_body_index_json
+            print(f"Met exception {e} during AI advice generation for body metrics analysis")
+        return result_body_metrics_json
 
 
 @timer
 @retry(stop_max_attempt_number=1, wait_fixed=1000, retry_on_result=lambda result: result is None)
-def generate_member_body_index_advice(user_prompt_tpl, sys_prompt, input_params: Dict, model) -> List or None:
-    """Invoke GPTs to generate AI health advice based on body index data."""
+def generate_user_body_metrics_advice(user_prompt_tpl, sys_prompt, input_params: Dict, model) -> List or None:
+    """Invoke GPTs to generate AI health advice based on body metrics data."""
     ai_response_advice = None
     try:
         user_prompt = Template(user_prompt_tpl).substitute(**input_params)
@@ -90,7 +89,7 @@ def invoke_gpt_api(system_prompt: str,
 if __name__ == '__main__':
     # start_time0 = time.time()
     input_case1 = {
-        "name": "Ethan",
+        "user_name": "Ethan Chen",
         "track_data": [
             {"date": "2023-10-01", "height": "175cm", "weight": "68kg", "body_fat_percentage": 0.18},
             {"date": "2023-10-08", "height": "175cm", "weight": "66kg", "body_fat_percentage": 0.17},
@@ -99,6 +98,6 @@ if __name__ == '__main__':
         ]
     }
     advisor = AIAdvisor()
-    test_result1 = advisor.get_body_index_advice(input_case1)
+    test_result1 = advisor.get_body_metrics_advice(input_case1)
 
     print(test_result1)
