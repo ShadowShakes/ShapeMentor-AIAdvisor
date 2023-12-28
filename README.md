@@ -1,2 +1,2 @@
-# ShapeMentor-AIAdvisor
-For course 6156
+# ShapeMentor-Advisor Microservice
+Codes of the 3rd Microservice for course final project.
